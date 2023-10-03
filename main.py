@@ -1,73 +1,99 @@
-to_do_list = []
+# ATM simulation program
+
+balance = 100000
+pin = '0000'
+max_attempts = 5
+attempts = 0
 
 
-def display_list():
-    if not to_do_list:
-        print("your list is empty. ")
+def display_menu():
+    print("Welcome to the ATM")
+    print("1. Check Balance")
+    print("2. Withdraw Money")
+    print("3. Transfer Money")
+    print("4. Change PIN")
+    print("5. Reset ATM")
+    print("6. Quit")
+
+
+def check_pin():
+    global attempts
+    while True:
+        entered_pin = input("Enter your 4-digit PIN: ")
+        if entered_pin == pin:
+            return True
+        else:
+            attempts += 1
+            if attempts >= max_attempts:
+                print("You have exceeded the maximum number of attempts. ATM locked.")
+                return False
+            print("Incorrect PIN. Please try again.")
+
+
+def check_balance():
+    print(f"Your balance.txt is N{balance}")
+
+
+def withdraw_money():
+    global balance
+    amount = int(input("Enter the amount to withdraw: "))
+    if amount <= balance:
+        balance -= amount
+        print(f"Withdrawn N{amount}. Your new balance.txt is N{balance}")
     else:
-        print("to do list")
-        for index, item in enumerate(to_do_list, 1):
-            print(f"{index}. {item}")
+        print("Insufficient balance.txt.")
 
 
-def add_item():
-    task = input("Enter the task you want to add: ")
-    to_do_list.append(task)
-    print(f"your {task} has been added. ")
+def transfer_money():
+    global balance
+    amount = int(input("Enter the amount to transfer: "))
+    if amount <= balance:
+        recipient_account = input("Enter the recipient's account number: ")
+        print(f"Transferred N{amount} to account {recipient_account}.")
+        balance -= amount
+        print(f"Your new balance.txt is ${balance}")
+    else:
+        print("Insufficient balance.txt.")
 
 
-def edit_item():
-    display_list()
-    if not to_do_list:
-        return
-    try:
-        item_number = int(input("Enter the number of items you want to change: "))
-        if 1 <= item_number <= len(to_do_list):
-            new_task = input("Enter the new task: ")
-            to_do_list[item_number - 1] = new_task
-            print(f"task {item_number} has been updated ")
-        else:
-            print("invalid task number. ")
-    except ValueError:
-        print("Invalid input. please input a valid number.")
+def change_pin():
+    global pin
+    new_pin = input("Enter your new 4-digit PIN: ")
+    if len(new_pin) == 4 and new_pin.isdigit():
+        pin = new_pin
+        print("PIN successfully changed.")
+    else:
+        print("Invalid PIN format. Please enter a 4-digit number.")
 
 
-def delete_item():
-    display_list()
-    if not to_do_list:
-        return
-    try:
-        item_number = int(input("Enter the number of task you want to delete: "))
-        if 1 <= item_number <= len(to_do_list):
-            deleted_task = to_do_list.pop(item_number - 1)
-            print(f"{deleted_task} has been removed from your to do list.")
-        else:
-            print("invalid task number. ")
-    except ValueError:
-        print("Invalid input. please input a valid number.")
+def reset_atm():
+    global balance, pin, attempts
+    balance = 100000
+    pin = '0000'
+    attempts = 0
+    print("ATM has been reset. Balance set to $100,000 and PIN reset to '0000'.")
 
 
 while True:
-    print("\n options")
-    print("1 Display to do list")
-    print("2 Add task")
-    print("3 Edit task")
-    print("4 delete task")
-    print("5 Quit")
+    display_menu()
+    option = input("Enter your choice: ")
 
-    choice = input("Enter your choice: ")
-
-    if choice == "1":
-        display_list()
-    elif choice == "2":
-        add_item()
-    elif choice == "3":
-        edit_item()
-    elif choice == "4":
-        delete_item()
-    elif choice == "5":
+    if option == '1':
+        if check_pin():
+            check_balance()
+    elif option == '2':
+        if check_pin():
+            withdraw_money()
+    elif option == '3':
+        if check_pin():
+            transfer_money()
+    elif option == '4':
+        if check_pin():
+            change_pin()
+    elif option == '5':
+        reset_atm()
+    elif option == '6':
+        print("Thank you for using the ATM. Goodbye!")
         break
     else:
-        print("invalid input, please enter a valid option.")
-
-
+        print("Invalid option. Please try again.")
